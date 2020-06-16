@@ -1,0 +1,56 @@
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: get-create-delete
+  namespace: service-a
+rules:
+- apiGroups: ["", "extensions", "apps", "cert-manager.io"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  - cronjobs
+  verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: service-a-groups
+  namespace: service-a
+subjects:
+- kind: Group
+  name: service-a
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: get-create-delete
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: get-create-delete
+  namespace: service-b
+rules:
+- apiGroups: ["", "extensions", "apps", "cert-manager.io"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  - cronjobs
+  verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: service-b-groups
+  namespace: service-b
+subjects:
+- kind: Group
+  name: service-b
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: get-create-delete

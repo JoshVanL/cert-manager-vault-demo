@@ -1,0 +1,66 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: oidc-ca
+  namespace: auth
+spec:
+  isCA: true
+  duration: 2160h # 90d
+  secretName: oidc-ca
+  commonName: oidc-ca
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: oidc-ca
+  namespace: auth
+spec:
+  ca:
+    secretName: oidc-ca
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: kube-oidc-proxy
+  namespace: auth
+spec:
+  duration: 721h # 30d
+  secretName: kube-oidc-proxy-tls
+  dnsNames:
+  - kube-oidc-proxy.auth
+  - kube-oidc-proxy
+  usages:
+    - server auth
+  issuerRef:
+    name: oidc-ca
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: oidc-issuer
+  namespace: auth
+spec:
+  duration: 721h # 30d
+  secretName: oidc-issuer-tls
+  dnsNames:
+  - oidc-issuer.auth
+  - oidc-issuer
+  usages:
+    - server auth
+  issuerRef:
+    name: oidc-ca
+    kind: Issuer
+    group: cert-manager.io
