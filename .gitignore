@@ -1,3 +1,2 @@
 .terraform
 terraform.tfstate*
-/k8s/secrets

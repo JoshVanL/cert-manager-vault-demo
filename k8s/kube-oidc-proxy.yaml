@@ -50,16 +50,10 @@ spec:
           - "--oidc-groups-claim=groups"
           - "--oidc-ca-file=/etc/oidc/tls/ca.pem"
         volumeMounts:
-          - name: kube-oidc-proxy-config
-            mountPath: /etc/oidc
-            readOnly: true
           - name: kube-oidc-proxy-tls
             mountPath: /etc/oidc/tls
             readOnly: true
       volumes:
-        - name: kube-oidc-proxy-config
-          secret:
-            secretName: kube-oidc-proxy-config
         - name: kube-oidc-proxy-tls
           secret:
             secretName: kube-oidc-proxy-tls

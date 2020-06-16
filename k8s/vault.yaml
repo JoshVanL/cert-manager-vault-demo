@@ -76,3 +76,14 @@ subjects:
 - kind: ServiceAccount
   name: vault
   namespace: vault
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: service-a
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: service-b
+---

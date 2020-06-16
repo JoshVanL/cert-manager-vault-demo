@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${namespace}
+---
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:

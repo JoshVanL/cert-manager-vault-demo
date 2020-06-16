@@ -1,10 +1,3 @@
-resource "kubernetes_namespace" "services" {
-  count = length(var.service_names)
-  metadata {
-    name = var.service_names[count.index]
-  }
-}
-
 resource "kubernetes_service_account" "vault-issuer" {
   count = length(var.service_names)
 
@@ -81,6 +74,7 @@ data "template_file" "service-cert" {
 
   vars = {
     service_name = var.service_names[count.index]
+    namespace    = var.service_names[count.index]
   }
 }
 
@@ -90,12 +84,25 @@ resource "local_file" "service-cert" {
   filename = "${path.module}/files/cert-${var.service_names[count.index]}.yaml"
 }
 
+resource "null_resource" "cert-manager-rollout" {
+  count = length(var.service_names)
+
+  depends_on = [
+    helm_release.cert-manager,
+  ]
+
+  provisioner "local-exec" {
+    command = "kubectl rollout status deployment -n cert-manager cert-manager-webhook"
+  }
+}
+
 resource "null_resource" "service-cert" {
   count = length(var.service_names)
 
   depends_on = [
     helm_release.cert-manager,
     local_file.service-cert,
+    null_resource.cert-manager-rollout,
   ]
 
   provisioner "local-exec" {

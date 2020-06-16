@@ -19,4 +19,9 @@ resource "helm_release" "cert-manager" {
   chart      = "cert-manager"
   namespace  = kubernetes_namespace.cert-manager.metadata[0].name
   version    = "0.15.0"
+
+  set {
+    name  = "featureGates"
+    value = "ExperimentalCertificateControllers=true"
+  }
 }
