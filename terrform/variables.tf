@@ -11,5 +11,5 @@ variable "k8s_host" {
 variable "service_names" {
   description = "Names for services"
   type        = list
-  default     = ["service-a", "service-b"]
+  default     = ["ping", "pong"]
 }

@@ -1,0 +1,148 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ping
+  namespace: ping
+spec:
+  renewBefore: 30m
+  duration: 1h
+  secretName: ping-tls
+  dnsNames:
+    - ping.ping.svc.cluster.local
+  issuerRef:
+    name: vault
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pong
+  namespace: pong
+spec:
+  renewBefore: 30m
+  duration: 1h
+  secretName: pong-tls
+  dnsNames:
+    - pong.pong.svc.cluster.local
+  issuerRef:
+    name: vault
+---
+apiVersion:  apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ping
+  name: ping
+  namespace: ping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping
+  template:
+    metadata:
+      labels:
+        app: ping
+    spec:
+      containers:
+        - image: localhost:5000/ping-pong:v0.0.1
+          imagePullPolicy: Always
+          name: pingpong
+          command:
+            - /usr/local/bin/pingpong
+            - -peer=https://pong.pong.svc.cluster.local:8443/ping
+            - -ca-file=/tls/ca.crt
+            - -cert-file=/tls/tls.crt
+            - -key-file=/tls/tls.key
+          volumeMounts:
+            - mountPath: /tls
+              name: ping-tls
+              readOnly: true
+          ports:
+            - containerPort: 8443
+              name: internal-https
+            - containerPort: 9443
+              name: external-https
+      volumes:
+        - name: ping-tls
+          secret:
+            secretName: ping-tls
+---
+apiVersion:  apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pong
+  name: pong
+  namespace: pong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pong
+  template:
+    metadata:
+      labels:
+        app: pong
+    spec:
+      containers:
+        - image: localhost:5000/ping-pong:v0.0.1
+          imagePullPolicy: Always
+          name: pingpong
+          command:
+            - /usr/local/bin/pingpong
+            - -peer=https://ping.ping.svc.cluster.local:8443/ping
+            - -ca-file=/tls/ca.crt
+            - -cert-file=/tls/tls.crt
+            - -key-file=/tls/tls.key
+          volumeMounts:
+            - mountPath: /tls
+              name: pong-tls
+              readOnly: true
+          ports:
+            - containerPort: 8443
+              name: internal-https
+            - containerPort: 9443
+              name: external-https
+      volumes:
+        - name: pong-tls
+          secret:
+            secretName: pong-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ping
+  namespace: ping
+spec:
+  type: NodePort
+  ports:
+    - name: internal-https
+      port: 8443
+      protocol: TCP
+      targetPort: internal-https
+    - name: https
+      port: 9443
+      protocol: TCP
+      targetPort: external-https
+  selector:
+    app: ping
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pong
+  namespace: pong
+spec:
+  type: NodePort
+  ports:
+    - name: internal-https
+      port: 8443
+      protocol: TCP
+      targetPort: internal-https
+    - name: https
+      port: 9443
+      protocol: TCP
+      targetPort: external-https
+  selector:
+    app: pong

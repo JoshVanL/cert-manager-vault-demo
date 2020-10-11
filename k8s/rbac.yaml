@@ -1,9 +1,9 @@
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: get-create-delete
-  namespace: service-a
+  namespace: ping
 rules:
 - apiGroups: ["", "extensions", "apps", "cert-manager.io"]
   resources: ["*"]
@@ -15,23 +15,23 @@ rules:
   verbs: ["*"]
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: service-a-groups
-  namespace: service-a
+  name: alice
+  namespace: ping
 subjects:
-- kind: Group
-  name: service-a
+- kind: User
+  name: alice
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: get-create-delete
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: get-create-delete
-  namespace: service-b
+  namespace: pong
 rules:
 - apiGroups: ["", "extensions", "apps", "cert-manager.io"]
   resources: ["*"]
@@ -43,13 +43,13 @@ rules:
   verbs: ["*"]
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: service-b-groups
-  namespace: service-b
+  name: bob
+  namespace: pong
 subjects:
-- kind: Group
-  name: service-b
+- kind: User
+  name: bob
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

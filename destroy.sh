@@ -17,4 +17,6 @@ cd ./terrform
 terraform destroy -auto-approve
 cd -
 
-kind delete cluster
+kind delete cluster --name vault-demo
+docker stop kind-registry
+docker rm kind-registry

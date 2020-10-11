@@ -80,10 +80,10 @@ subjects:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: service-a
+  name: ping
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: service-b
+  name: pong
 ---

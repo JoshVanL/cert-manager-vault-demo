@@ -14,7 +14,7 @@ resource "vault_pki_secret_backend_root_cert" "pki" {
   private_key_format = "der"
   key_type           = "rsa"
   key_bits           = 2048
-  common_name        = "my-company.com"
+  common_name        = "cert-manager.io"
   ttl                = "315360000"
 }
 
@@ -28,7 +28,7 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "pki_int" {
 
   backend     = vault_pki_secret_backend.pki_int.path
   type        = "exported"
-  common_name = "my-company.com"
+  common_name = "cert-manager.io"
 }
 
 resource "vault_pki_secret_backend_root_sign_intermediate" "pki" {
@@ -37,7 +37,7 @@ resource "vault_pki_secret_backend_root_sign_intermediate" "pki" {
   backend = vault_pki_secret_backend.pki.path
 
   csr         = vault_pki_secret_backend_intermediate_cert_request.pki_int.csr
-  common_name = "my-company.com"
+  common_name = "cert-manager.io"
   ttl         = "157680000"
   format      = "pem_bundle"
 }
@@ -57,7 +57,7 @@ resource "vault_pki_secret_backend_role" "services" {
   allow_any_name     = "false"
   allow_bare_domains = "true"
   allow_glob_domains = "false"
-  allowed_domains    = ["${var.service_names[count.index]}"]
+  allowed_domains    = ["${var.service_names[count.index]}.svc.cluster.local"]
   allow_subdomains   = "true"
   generate_lease     = "true"
 }
