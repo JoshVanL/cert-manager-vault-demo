@@ -61,8 +61,6 @@ spec:
           ports:
             - containerPort: 8443
               name: internal-https
-            - containerPort: 9443
-              name: external-https
       volumes:
         - name: ping-tls
           secret:
@@ -102,8 +100,6 @@ spec:
           ports:
             - containerPort: 8443
               name: internal-https
-            - containerPort: 9443
-              name: external-https
       volumes:
         - name: pong-tls
           secret:
@@ -115,16 +111,12 @@ metadata:
   name: ping
   namespace: ping
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: internal-https
       port: 8443
       protocol: TCP
       targetPort: internal-https
-    - name: https
-      port: 9443
-      protocol: TCP
-      targetPort: external-https
   selector:
     app: ping
 ---
@@ -134,15 +126,11 @@ metadata:
   name: pong
   namespace: pong
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: internal-https
       port: 8443
       protocol: TCP
       targetPort: internal-https
-    - name: https
-      port: 9443
-      protocol: TCP
-      targetPort: external-https
   selector:
     app: pong
