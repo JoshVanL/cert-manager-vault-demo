@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: service-b
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: vault
+  namespace: service-b
+spec:
+  vault:
+    auth:
+      kubernetes:
+        role: service-b
+        mountPath: /v1/auth/kubernetes
+        secretRef:
+          name: vault-issuer-token-z2rp4
+          key: token
+    path: pki_int/sign/service-b
+    server: http://vault.vault:8200

@@ -1,17 +1,18 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: service-b
+  name: frontend
   namespace: service-a
 spec:
   dnsNames:
-  - service-b.service-b
+  - frontend.service-a
   duration: 10h0m0s
   issuerRef:
     group: cert-manager.io
     kind: Issuer
     name: vault
   renewBefore: 5h0m0s
-  secretName: service-b-tls
+  secretName: frontend-tls
   usages:
   - server auth
+  - client auth

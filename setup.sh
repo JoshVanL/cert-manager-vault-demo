@@ -31,4 +31,4 @@ kubectl apply -f ./k8s/kube-oidc-proxy.yaml
 kubectl apply -f ./k8s/oidc-issuer.yaml
 kubectl apply -f ./k8s/rbac.yaml
 kubectl apply -f ./k8s/knet-stress.yaml
-kubectl apply -f ./k8s/bad-cert.yaml
+#kubectl apply -f ./k8s/bad-cert.yaml

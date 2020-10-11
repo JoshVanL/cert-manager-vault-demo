@@ -23,7 +23,6 @@ path "pki_int/issue/${var.service_names[count.index]}" {
   capabilities = ["read", "update", "list", "delete"]
 }
 EOT
-
 }
 
 resource "vault_kubernetes_auth_backend_role" "services" {
@@ -96,16 +95,16 @@ resource "null_resource" "cert-manager-rollout" {
   }
 }
 
-resource "null_resource" "service-cert" {
-  count = length(var.service_names)
-
-  depends_on = [
-    helm_release.cert-manager,
-    local_file.service-cert,
-    null_resource.cert-manager-rollout,
-  ]
-
-  provisioner "local-exec" {
-    command = "kubectl apply -f ${path.module}/files/cert-${var.service_names[count.index]}.yaml"
-  }
-}
+#resource "null_resource" "service-cert" {
+#  count = length(var.service_names)
+#
+#  depends_on = [
+#    helm_release.cert-manager,
+#    local_file.service-cert,
+#    null_resource.cert-manager-rollout,
+#  ]
+#
+#  provisioner "local-exec" {
+#    command = "kubectl apply -f ${path.module}/files/cert-${var.service_names[count.index]}.yaml"
+#  }
+#}
